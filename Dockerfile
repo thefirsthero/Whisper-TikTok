@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     git \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
-    && git clone https://github.com/MatteoFasulo/Whisper-TikTok.git . \
+    && git clone https://github.com/thefirsthero/Whisper-TikTok.git . \
     && pip3 install --no-cache-dir -r requirements.txt
 
 EXPOSE 8501
