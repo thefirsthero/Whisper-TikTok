@@ -215,7 +215,7 @@ async def main():
 
         # Background Video URL
         url = st.text_input(
-            "URL Background Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", help="The URL of the background video to use for the TikTok video", placeholder="https://www.youtube.com/watch?v=intRX7BRA90")
+            "URL Background Video", "https://www.youtube.com/watch?v=intRX7BRA90", help="The URL of the background video to use for the TikTok video", placeholder="https://www.youtube.com/watch?v=intRX7BRA90")
 
         left, mid, right = st.columns(3)
 
