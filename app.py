@@ -281,18 +281,23 @@ async def main():
             help="The video to generate. If you want to generate multiple videos, select them as a multiselect."
         )
 
-        if st.button("Generate Video"):
-            if not video_num:
-                st.error("You must select at least one video to generate")
-                return
-            global result
-            selected_audio_path = None
-            if add_audio and selected_audio:
-                with open("temp_audio_file.wav", "wb") as audio_file:
-                    audio_file.write(selected_audio.read())
-                selected_audio_path = "temp_audio_file.wav"
-            result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                          url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path)
+        # Display the "Generate Video" button only if "Add Audio?" is not selected or if an audio file was added
+        if not add_audio or (add_audio and selected_audio):
+            if st.button("Generate Video"):
+                if not video_num:
+                    st.error("You must select at least one video to generate")
+                    return
+                global result
+                selected_audio_path = None
+                if add_audio and selected_audio:
+                    with open("temp_audio_file.wav", "wb") as audio_file:
+                        audio_file.write(selected_audio.read())
+                    selected_audio_path = "temp_audio_file.wav"
+                result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
+                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path)
+        else:
+            st.button("Generate Video", disabled=True)
+
 
     with RIGHT:
         if result:
