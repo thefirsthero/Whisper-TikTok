@@ -33,10 +33,13 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
     if verbose:
         rich_print(
             f"{filename_srt = }\n{background_mp4 = }\n{filename_mp3 = }\n", style='bold green')
+    
+    srt_filename_formatted = srt_raw.absolute()
 
-    # .ass file path fix for windows 11
-    srt_filename_formatted = str(srt_raw).replace("\\", "\\\\\\\\")
-    srt_filename_formatted = r"C\:\\\\"+ str(srt_filename_formatted)[4:]
+    if os.name == 'nt':  # Check if the OS is Windows
+        # .ass file path fix for Windows
+        srt_filename_formatted = str(srt_raw).replace("\\", "\\\\\\\\")
+        srt_filename_formatted = r"C\:\\\\" + str(srt_filename_formatted)[4:]
 
     args = [
         "ffmpeg",
