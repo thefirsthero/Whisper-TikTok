@@ -213,11 +213,11 @@ async def main():
         with mid:
             # Subtitle font size
             font_size = st.slider(
-                "Subtitle font size", 15, 50, 21, help="The font size for the subtitles. It is recommended to use a font size between 18 and 21.")
+                "Subtitle font size", 15, 50, 15, help="The font size for the subtitles. It is recommended to use a font size between 18 and 21.")
         with right:
             # Subtitle font color
             font_color = st.color_picker(
-                "Subtitle font color", "#fff000", help="The color of the subtitles.")
+                "Subtitle font color", "#1EB102", help="The color of the subtitles.")
 
         # Subtitle position
         left, right = st.columns(2)
@@ -283,7 +283,7 @@ async def main():
 
         add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
         mixing_percentage = 0.3  # Default mixing percentage
-        
+
         if add_audio:
             selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
             mixing_percentage = st.slider("Mixing Percentage", 0.0, 1.0, 0.3, help="Adjust the mixing percentage for audio")
