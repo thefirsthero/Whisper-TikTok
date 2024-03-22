@@ -13,6 +13,9 @@ import pandas as pd
 from src.video_creator import VideoCreator
 from utils import rgb_to_bgr
 
+# Import the function for merging audio and video
+from merge_audio_video import merge_video_and_audio
+
 result = None
 
 
@@ -31,8 +34,16 @@ async def generate_video(
         background_tab,
         video_num,
         max_words,
+        add_audio,  
+        selected_audio_path,  
         *args,
         **kwargs):
+
+    # Extract the file name (without extension) from the original video file path
+    def get_output_file_name(video_path):
+        file_name = os.path.basename(video_path)
+        file_name_without_extension = os.path.splitext(file_name)[0]
+        return f"{file_name_without_extension}_with_audio.mp4"
 
     args = Namespace(
         model=model,
@@ -49,7 +60,7 @@ async def generate_video(
         max_words=max_words
     )
 
-    async def get_video(video_data, args):
+    async def get_video(video_data, args, add_audio):  # Pass checkbox state to function
         with st.status("Generating video...", expanded=False) as status:
             video_creator = VideoCreator(video_data, args)
 
@@ -74,15 +85,25 @@ async def generate_video(
             status.update(label="Integrating subtitles...")
             video_creator.integrate_subtitles()
 
+            # Check if "Add Audio?" checkbox is checked
+            if add_audio:
+               # Get the output file name
+                output_file_name = get_output_file_name(str(video_creator.mp4_final_video))
+
+                # Merge video with uploaded audio using the modified output file name
+                merge_video_and_audio(str(video_creator.mp4_final_video), selected_audio_path, output_file_name, 0.3)
+
+                return output_file_name  # Return the modified output file name
+
             if upload_tiktok:
                 status.update(label="Uploading to TikTok...")
                 video_creator.upload_to_tiktok()
 
             status.update(label="Video generated!",
                           state="complete", expanded=False)
-            return str(video_creator.mp4_final_video)
+            return 'output_with_audio/output_with_audio.mp4' if add_audio else str(video_creator.mp4_final_video)
 
-    tasks = [get_video(video_json[i], args)
+    tasks = [get_video(video_json[i], args, add_audio)  # Pass checkbox state to function
              for i, name in enumerate(video_num)]
     results = await asyncio.gather(*tasks)
 
@@ -180,6 +201,11 @@ async def main():
                 9. Check the "Upload to TikTok" checkbox if you want to upload the video to TikTok using the TikTok session cookie. For this step it is required to have a TikTok account and to be logged in on your browser. Then the required cookies.txt file can be generated using this guide
                 """)
 
+    st.subheader("Audio Settings")
+    add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
+    if add_audio:
+        selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
+
     LEFT, RIGHT = st.columns(2)
 
     with LEFT:
@@ -267,8 +293,13 @@ async def main():
                 st.error("You must select at least one video to generate")
                 return
             global result
+            selected_audio_path = None
+            if add_audio and selected_audio:
+                with open("temp_audio_file.wav", "wb") as audio_file:
+                    audio_file.write(selected_audio.read())
+                selected_audio_path = "temp_audio_file.wav"
             result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                          url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words)
+                                          url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path)
 
     with RIGHT:
         if result:
