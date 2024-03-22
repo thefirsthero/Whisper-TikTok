@@ -35,7 +35,8 @@ async def generate_video(
         video_num,
         max_words,
         add_audio,  
-        selected_audio_path,  
+        selected_audio_path,
+        mixing_percentage, 
         *args,
         **kwargs):
 
@@ -82,7 +83,7 @@ async def generate_video(
             # Check if "Add Audio?" checkbox is checked
             if add_audio:
                 # Merge video with uploaded audio using the original video file name
-                merge_video_and_audio(str(video_creator.mp4_final_video), selected_audio_path, str(video_creator.mp4_final_video), 0.3)
+                merge_video_and_audio(str(video_creator.mp4_final_video), selected_audio_path, str(video_creator.mp4_final_video), mixing_percentage)
 
                 # Delete the temporary audio file after merging
                 os.remove(selected_audio_path)
@@ -281,8 +282,11 @@ async def main():
         st.subheader("Audio Settings")
 
         add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
+        mixing_percentage = 0.3  # Default mixing percentage
+        
         if add_audio:
             selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
+            mixing_percentage = st.slider("Mixing Percentage", 0.0, 1.0, 0.3, help="Adjust the mixing percentage for audio")
         
         st.divider()
         
@@ -301,7 +305,7 @@ async def main():
                         audio_file.write(selected_audio.read())
                     selected_audio_path = "temp_audio_file.wav"
                 result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path)
+                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage)
         else:
             st.button("Generate Video", disabled=True)
 
