@@ -39,12 +39,6 @@ async def generate_video(
         *args,
         **kwargs):
 
-    # Extract the file name (without extension) from the original video file path
-    def get_output_file_name(video_path):
-        file_name = os.path.basename(video_path)
-        file_name_without_extension = os.path.splitext(file_name)[0]
-        return f"{file_name_without_extension}_with_audio.mp4"
-
     args = Namespace(
         model=model,
         tts=tts_voice.split('|')[0].strip(),
@@ -87,13 +81,11 @@ async def generate_video(
 
             # Check if "Add Audio?" checkbox is checked
             if add_audio:
-               # Get the output file name
-                output_file_name = get_output_file_name(str(video_creator.mp4_final_video))
+                # Merge video with uploaded audio using the original video file name
+                merge_video_and_audio(str(video_creator.mp4_final_video), selected_audio_path, str(video_creator.mp4_final_video), 0.3)
 
-                # Merge video with uploaded audio using the modified output file name
-                merge_video_and_audio(str(video_creator.mp4_final_video), selected_audio_path, output_file_name, 0.3)
-
-                return output_file_name  # Return the modified output file name
+                # Delete the temporary audio file after merging
+                os.remove(selected_audio_path)
 
             if upload_tiktok:
                 status.update(label="Uploading to TikTok...")
@@ -101,7 +93,7 @@ async def generate_video(
 
             status.update(label="Video generated!",
                           state="complete", expanded=False)
-            return 'output_with_audio/output_with_audio.mp4' if add_audio else str(video_creator.mp4_final_video)
+            return str(video_creator.mp4_final_video)  # Return the original video file path
 
     tasks = [get_video(video_json[i], args, add_audio)  # Pass checkbox state to function
              for i, name in enumerate(video_num)]
@@ -112,6 +104,7 @@ async def generate_video(
 
     else:
         return results[-1]
+
 
 
 @st.cache_data
