@@ -194,11 +194,6 @@ async def main():
                 9. Check the "Upload to TikTok" checkbox if you want to upload the video to TikTok using the TikTok session cookie. For this step it is required to have a TikTok account and to be logged in on your browser. Then the required cookies.txt file can be generated using this guide
                 """)
 
-    st.subheader("Audio Settings")
-    add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
-    if add_audio:
-        selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
-
     LEFT, RIGHT = st.columns(2)
 
     with LEFT:
@@ -280,6 +275,18 @@ async def main():
             default=[videos[0]],
             help="The video to generate. If you want to generate multiple videos, select them as a multiselect."
         )
+
+        st.divider()
+
+        st.subheader("Audio Settings")
+
+        add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
+        if add_audio:
+            selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
+        
+        st.divider()
+        
+        st.subheader("Generate Video")
 
         # Display the "Generate Video" button only if "Add Audio?" is not selected or if an audio file was added
         if not add_audio or (add_audio and selected_audio):
