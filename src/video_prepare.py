@@ -8,7 +8,7 @@ from utils import *
 HOME = Path.cwd()
 
 
-def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str, verbose: bool = False) -> str:
+def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str, output_filename: str, verbose: bool = False) -> str:
     video_info = get_info(background_mp4, kind='video')
     video_duration = int(round(video_info.get('duration'), 0))
 
@@ -21,14 +21,13 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
         ss = 0
 
     srt_raw = filename_srt
-    srt_filename = filename_srt.name
     srt_path = filename_srt.parent.absolute()
 
     directory = HOME / 'output'
     if not directory.exists():
         directory.mkdir()
 
-    outfile = f"{HOME}{os.sep}output{os.sep}output_{ss}.mp4"
+    outfile = f"{HOME}{os.sep}output{os.sep}{output_filename}.mp4"
 
     if verbose:
         rich_print(

@@ -82,8 +82,11 @@ class VideoCreator:
         return background_mp4
 
     def integrate_subtitles(self):
+        series = self.series.replace(' ', '_')
+        outfilename = f"{series}_{self.part}"
+
         final_video = prepare_background(
-            self.mp4_background, filename_mp3=self.mp3_file, filename_srt=self.ass_file, verbose=self.args.verbose)
+            self.mp4_background, filename_mp3=self.mp3_file, filename_srt=self.ass_file, output_filename=outfilename, verbose=self.args.verbose)
         final_video = Path(final_video).absolute()
 
         self.mp4_final_video = final_video
