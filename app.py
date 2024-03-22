@@ -142,23 +142,23 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'Get Help': 'https://github.com/MatteoFasulo/Whisper-TikTok',
-        'Report a bug': "https://github.com/MatteoFasulo/Whisper-TikTok/issues",
+        'Get Help': 'https://github.com/thefirsthero/Whisper-TikTok',
+        'Report a bug': "https://github.com/thefirsthero/Whisper-TikTok/issues",
         'About':
             """
             # Whisper-TikTok
             Whisper-TikTok is an innovative AI-powered tool that leverages the prowess of Edge TTS, OpenAI-Whisper, and FFMPEG to craft captivating TikTok videos also with a web application interface!
 
-            Mantainer: https://github.com/MatteoFasulo
+            Mantainer: https://github.com/thefirsthero
 
-            If you find a bug or if you just have questions about the project feel free to reach me at https://github.com/MatteoFasulo/Whisper-TikTok
+            If you find a bug or if you just have questions about the project feel free to reach me at https://github.com/thefirsthero/Whisper-TikTok
             Any contribution to this project is welcome to improve the quality of work!
             """
     }
 )
 
 st.page_link("pages/reddit.py", label="Reddit", icon="🤖")
-st.page_link("https://github.com/MatteoFasulo/Whisper-TikTok",
+st.page_link("https://github.com/thefirsthero/Whisper-TikTok",
              label="GitHub", icon="🌎")
 
 

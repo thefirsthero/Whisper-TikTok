@@ -29,9 +29,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/MatteoFasulo
-    - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/in/matteofasulo/
+      link: https://github.com/thefirsthero
 
 markdown_extensions:
   - pymdownx.highlight:

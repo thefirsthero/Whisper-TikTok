@@ -1,9 +1,5 @@
 # Introducing Whisper-TikTok 🤖🎥
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=MatteoFasulo/Whisper-TikTok&type=Date)](https://star-history.com/#MatteoFasulo/Whisper-TikTok&Date)
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -29,10 +25,6 @@ Discover Whisper-TikTok, an innovative AI-powered tool that leverages the prowes
 ## Streamlit Web App
 
 ![Webui](docs/WebuiDemo.png)
-
-## Demo Video
-
-<https://github.com/MatteoFasulo/Whisper-TikTok/assets/74818541/68e25504-c305-4144-bd39-c9acc218c3a4>
 
 ## How it Works
 
@@ -78,7 +70,7 @@ Whisper-TikTok has undergone rigorous testing on Windows 10, Windows 11 and Ubun
 If you want to run Whisper-TikTok locally, you can clone the repository using the following command:
 
 ```bash
-git clone https://github.com/MatteoFasulo/Whisper-TikTok.git
+git clone https://github.com/thefirsthero/Whisper-TikTok.git
 ```
 
 > However, there is also a Docker image available for Whisper-TikTok which can be used to run the program in a containerized environment.
@@ -220,11 +212,6 @@ Please review our [Code of Conduct](./CODE_OF_CONDUCT.md) before contributing to
 ## Contributing
 
 We welcome contributions from the community! Please see our [Contributing Guidelines](./CONTRIBUTING.md) for more information.
-
-## Upcoming Features
-
-- Integration with the OpenAI API to generate more advanced responses.
-- Generate content by extracting it from reddit <https://github.com/MatteoFasulo/Whisper-TikTok/issues/22>
 
 ## Acknowledgments
 
