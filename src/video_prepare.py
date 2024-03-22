@@ -38,8 +38,6 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
     srt_filename_formatted = str(srt_raw).replace("\\", "\\\\\\\\")
     srt_filename_formatted = r"C\:\\\\"+ str(srt_filename_formatted)[4:]
 
-    print(f'---SRT FILENAME---: ', srt_filename_formatted)
-
     args = [
         "ffmpeg",
         "-ss", str(ss),
