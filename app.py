@@ -8,6 +8,7 @@ from argparse import Namespace
 
 import edge_tts
 import streamlit as st
+import pandas as pd
 
 from src.video_creator import VideoCreator
 from utils import rgb_to_bgr
@@ -29,6 +30,7 @@ async def generate_video(
         video_json,
         background_tab,
         video_num,
+        max_words,
         *args,
         **kwargs):
 
@@ -44,6 +46,7 @@ async def generate_video(
         upload_tiktok=upload_tiktok,
         verbose=verbose,
         mp4_background=background_tab,
+        max_words=max_words
     )
 
     async def get_video(video_data, args):
@@ -90,6 +93,34 @@ async def generate_video(
         return results[-1]
 
 
+@st.cache_data
+def json_to_df(json_file):
+    return pd.read_json(json_file)
+
+
+@st.cache_data
+def df_to_json(df):
+    try:
+        # Convert the DataFrame to a JSON string
+        json_str = df.to_json(orient='records', indent=4, force_ascii=False)
+
+        # raise an error if the dataframe has no rows (at least one is required)
+        if df.shape[0] == 0:
+            st.error("You must add at least one video to the JSON")
+            return
+
+        # Save the JSON string to a file
+        with open('video.json', 'w', encoding='UTF-8') as f:
+            f.write(json_str)
+
+        st.success("JSON saved successfully!")
+
+    except ValueError as e:
+        st.error("You must fill all the fields in the JSON")
+    except Exception as e:
+        st.error(f"Error saving JSON: {e}")
+
+
 # Streamlit Config
 st.set_page_config(
     page_title="Whisper-TikTok",
@@ -112,16 +143,22 @@ st.set_page_config(
     }
 )
 
+st.page_link("pages/reddit.py", label="Reddit", icon="🤖")
+st.page_link("https://github.com/MatteoFasulo/Whisper-TikTok",
+             label="GitHub", icon="🌎")
+
 
 async def main():
 
-    _, mid, _ = st.columns(3)
+    st.title("🏆 Whisper-TikTok 🚀")
+    st.write("Create a TikTok video with text-to-speech of Microsoft Edge's TTS and subtitles of Whisper model.")
 
-    with mid:
-
-        st.title("🏆 Whisper-TikTok 🚀")
-        st.write(
-            "Create a TikTok video with text-to-speech of Microsoft Edge's TTS and subtitles of Whisper model.")
+    st.subheader("JSON Editor", help="Here you can edit the JSON file with the videos. Copy-and-paste is supported and compatible with Google Sheets, Excel, and others. You can do bulk-editing by dragging the handle on a cell (similar to Excel)!")
+    st.write("ℹ️ The JSON file is saved automatically when you click the button below. Every time you edit the JSON file, you must click the button to save the changes otherwise they will be lost.")
+    edited_df = st.data_editor(json_to_df('video.json'),
+                               num_rows="dynamic")
+    st.button("Save JSON", on_click=df_to_json, args=(
+        edited_df,), help="Save the JSON file with the videos")
 
     st.divider()
 
@@ -168,12 +205,17 @@ async def main():
                 "Subtitle font color", "#fff000", help="The color of the subtitles.")
 
         # Subtitle position
-        sub_position = st.slider(
-            "Subtitle alignment (position)", 1, 9, 5, help="The position of the subtitles. 1 is the bottom left corner, 5 is the center, 9 is the top right corner. This is the alignment feature of FFMPEG subtitles.")
+        left, right = st.columns(2)
+        with left:
+            sub_position = st.slider(
+                "Subtitle alignment (position)", 1, 9, 5, help="The position of the subtitles. 1 is the bottom left corner, 5 is the center, 9 is the top right corner. This is the alignment feature of FFMPEG subtitles.")
+        with right:
+            max_words = st.number_input(
+                "Maximum number of words per line", min_value=2, max_value=5, value=2, step=1, help="The maximum number of words per line for the subtitles. This is the feature for stable whisper model. It is recommended to use a value between 2 and 3.")
 
         # Background Video URL
         url = st.text_input(
-            "URL Background Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", help="The URL of the background video to use for the TikTok video", placeholder="https://www.youtube.com/watch?v=intRX7BRA90")
+            "URL Background Video", "https://www.youtube.com/watch?v=intRX7BRA90", help="The URL of the background video to use for the TikTok video", placeholder="https://www.youtube.com/watch?v=intRX7BRA90")
 
         left, mid, right = st.columns(3)
 
@@ -226,7 +268,7 @@ async def main():
                 return
             global result
             result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                          url, non_english, upload_tiktok, verbose, videos, background_tab, video_num)
+                                          url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words)
 
     with RIGHT:
         if result:

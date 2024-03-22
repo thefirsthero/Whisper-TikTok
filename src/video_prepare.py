@@ -20,6 +20,7 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
     if ss < 0:
         ss = 0
 
+    srt_raw = filename_srt
     srt_filename = filename_srt.name
     srt_path = filename_srt.parent.absolute()
 
@@ -33,6 +34,12 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
         rich_print(
             f"{filename_srt = }\n{background_mp4 = }\n{filename_mp3 = }\n", style='bold green')
 
+    # .ass file path fix for windows 11
+    srt_filename_formatted = str(srt_raw).replace("\\", "\\\\\\\\")
+    srt_filename_formatted = r"C\:\\\\"+ str(srt_filename_formatted)[4:]
+
+    print(f'---SRT FILENAME---: ', srt_filename_formatted)
+
     args = [
         "ffmpeg",
         "-ss", str(ss),
@@ -41,7 +48,7 @@ def prepare_background(background_mp4: str, filename_mp3: str, filename_srt: str
         "-i", filename_mp3,
         "-map", "0:v",
         "-map", "1:a",
-        "-filter:v", f"crop=ih/16*9:ih, scale=w=1080:h=1920:flags=lanczos, gblur=sigma=2, ass={srt_filename}",
+        "-vf", f"crop=ih/16*9:ih, scale=w=1080:h=1920:flags=lanczos, gblur=sigma=2, ass='{srt_filename_formatted}'",
         "-c:v", "libx264",
         "-crf", "23",
         "-c:a", "aac",
