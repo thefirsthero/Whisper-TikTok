@@ -200,6 +200,10 @@ async def main():
         
         # Add checkbox for adding images
         add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
+
+        if add_audio:
+            selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
+            mixing_percentage = st.slider("Mixing Percentage", 0.0, 1.0, 0.3, help="Adjust the mixing percentage for audio")
     
     if not use_images:
         st.divider()
@@ -298,15 +302,6 @@ async def main():
         mixing_percentage = 0.3  # Default mixing percentage
 
         st.divider()
-        
-        if add_audio:
-
-            st.subheader("Audio Settings")
-
-            selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
-            mixing_percentage = st.slider("Mixing Percentage", 0.0, 1.0, 0.3, help="Adjust the mixing percentage for audio")
-        
-            st.divider()
         
         st.subheader("Generate Video")
 
