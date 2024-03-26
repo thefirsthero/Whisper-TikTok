@@ -225,7 +225,7 @@ async def main():
         st.subheader("General settings")
         tts_voice = st.selectbox(
             "TTS Voice",
-            [f"{i['ShortName']} | {i['Gender']} | Tags: {i['VoiceTag']['VoicePersonalities']}" for i in await edge_tts.list_voices()], index=111, help="The voice used to generate the audio. The voice must be in the same language as the subtitles."
+            [f"{i['ShortName']} | {i['Gender']} | Tags: {i['VoiceTag']['VoicePersonalities']}" for i in await edge_tts.list_voices()], index=113, help="The voice used to generate the audio. The voice must be in the same language as the subtitles."
         )
 
         left, mid, right = st.columns(3)
