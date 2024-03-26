@@ -14,7 +14,11 @@ from src.video_creator import VideoCreator
 from utils import rgb_to_bgr
 
 # Import the function for merging audio and video
-from merge_audio_video import merge_video_and_audio
+from src.audio_processing.merge_audio_video import merge_video_and_audio
+
+from src.create_video_json import process_images
+
+import tempfile
 
 result = None
 
@@ -37,6 +41,8 @@ async def generate_video(
         add_audio,  
         selected_audio_path,
         mixing_percentage, 
+        use_images,  # New argument for using images
+        selected_image_paths,  # New argument for selected image paths
         *args,
         **kwargs):
 
@@ -58,6 +64,20 @@ async def generate_video(
     async def get_video(video_data, args, add_audio):  # Pass checkbox state to function
         with st.status("Generating video...", expanded=False) as status:
             video_creator = VideoCreator(video_data, args)
+
+            # Process uploaded images if "Use Images?" checkbox is checked
+            if use_images:
+                # Create a temporary directory to store uploaded images
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_dir_path = Path(temp_dir)
+                    for idx, uploaded_file in enumerate(selected_image_paths):
+                        file_path = temp_dir_path / f"image_{idx}.jpg"  # Save each uploaded image with a unique name
+                        with open(file_path, "wb") as f:
+                            f.write(uploaded_file.getbuffer())
+
+                    # Process images in the temporary directory
+                    status.update(label="Processing images...")
+                    process_images(temp_dir_path)
 
             status.update(label="Downloading video...")
             video_creator.download_video()
@@ -105,7 +125,6 @@ async def generate_video(
 
     else:
         return results[-1]
-
 
 
 @st.cache_data
@@ -168,32 +187,28 @@ async def main():
     st.title("🏆 Whisper-TikTok 🚀")
     st.write("Create a TikTok video with text-to-speech of Microsoft Edge's TTS and subtitles of Whisper model.")
 
-    st.subheader("JSON Editor", help="Here you can edit the JSON file with the videos. Copy-and-paste is supported and compatible with Google Sheets, Excel, and others. You can do bulk-editing by dragging the handle on a cell (similar to Excel)!")
-    st.write("ℹ️ The JSON file is saved automatically when you click the button below. Every time you edit the JSON file, you must click the button to save the changes otherwise they will be lost.")
-    edited_df = st.data_editor(json_to_df('video.json'),
-                               num_rows="dynamic")
-    st.button("Save JSON", on_click=df_to_json, args=(
-        edited_df,), help="Save the JSON file with the videos")
-
-    st.divider()
-
     with st.sidebar:
         model = st.selectbox(
             "Whisper Model", ["tiny", "base", "small", "medium", "large"], index=2, help="The model used to generate the subtitles. The bigger the model, the better the results, but the slower the generation. The tiny model is recommended for testing purposes. Medium model is enough for good results in many languages.")
 
-        with st.expander("ℹ️ How to use"):
-            st.write(
-                """
-                1. Choose the video to generate using the dropdown menu.
-                2. Choose the model to use for the subtitles.
-                3. Choose the voice to use for the text-to-speech.
-                4. Choose the background video to use for the TikTok video.
-                5. Choose the position of the subtitles.
-                6. Choose the font, font color, and font size for the subtitles.
-                7. Choose the URL of the background video to use for the TikTok video.
-                8. Check the "Non-english" checkbox if you want to generate a video in a non-english language.
-                9. Check the "Upload to TikTok" checkbox if you want to upload the video to TikTok using the TikTok session cookie. For this step it is required to have a TikTok account and to be logged in on your browser. Then the required cookies.txt file can be generated using this guide
-                """)
+        # Add checkbox for using images
+        use_images = st.checkbox("Use Images?", help="Check this box if you want to include images in your video")
+
+        if use_images:
+            # Add section to upload images
+            selected_image_paths = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload images to include in the video")
+    
+    if not use_images:
+        st.divider()
+        
+        st.subheader("JSON Editor", help="Here you can edit the JSON file with the videos. Copy-and-paste is supported and compatible with Google Sheets, Excel, and others. You can do bulk-editing by dragging the handle on a cell (similar to Excel)!")
+        st.write("ℹ️ The JSON file is saved automatically when you click the button below. Every time you edit the JSON file, you must click the button to save the changes otherwise they will be lost.")
+        edited_df = st.data_editor(json_to_df('video.json'),
+                                num_rows="dynamic")
+        st.button("Save JSON", on_click=df_to_json, args=(
+            edited_df,), help="Save the JSON file with the videos")
+
+        st.divider()
 
     LEFT, RIGHT = st.columns(2)
 
@@ -305,7 +320,7 @@ async def main():
                         audio_file.write(selected_audio.read())
                     selected_audio_path = "temp_audio_file.wav"
                 result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage)
+                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage, use_images, selected_image_paths)
         else:
             st.button("Generate Video", disabled=True)
 
