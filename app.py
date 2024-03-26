@@ -187,6 +187,8 @@ async def main():
     st.title("🏆 Whisper-TikTok 🚀")
     st.write("Create a TikTok video with text-to-speech of Microsoft Edge's TTS and subtitles of Whisper model.")
 
+    selected_images_path = None  # Initialize selected_image_paths variable
+    
     with st.sidebar:
         model = st.selectbox(
             "Whisper Model", ["tiny", "base", "small", "medium", "large"], index=2, help="The model used to generate the subtitles. The bigger the model, the better the results, but the slower the generation. The tiny model is recommended for testing purposes. Medium model is enough for good results in many languages.")
@@ -196,7 +198,7 @@ async def main():
 
         if use_images:
             # Add section to upload images
-            selected_image_paths = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload images to include in the video")
+            selected_images_path = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload images to include in the video")
         
         # Add checkbox for adding images
         add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
@@ -307,7 +309,7 @@ async def main():
 
         # Display the "Generate Video" button only if "Add Audio?" is not selected or if an audio file was added,
         # and if "Use Images?" is not selected or if images were uploaded
-        if (not add_audio or (add_audio and selected_audio)) and (not use_images or (use_images and selected_image_paths)):
+        if (not add_audio or (add_audio and selected_audio)) and (not use_images or (use_images and selected_images_path)):
             if st.button("Generate Video"):
                 if not video_num:
                     st.error("You must select at least one video to generate")
@@ -319,7 +321,7 @@ async def main():
                         audio_file.write(selected_audio.read())
                     selected_audio_path = "temp_audio_file.wav"
                 result = await generate_video(model, tts_voice, sub_position, font, font_color, font_size,
-                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage, use_images, selected_image_paths)
+                                            url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage, use_images, selected_images_path)
         else:
             st.button("Generate Video", disabled=True)
 
