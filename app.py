@@ -198,7 +198,7 @@ async def main():
 
         if use_images:
             # Add section to upload images
-            selected_images_path = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload images to include in the video")
+            selected_images_path = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload confession images to create video.json from")
         
         # Add checkbox for adding images
         add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
