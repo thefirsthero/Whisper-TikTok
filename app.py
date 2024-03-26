@@ -191,7 +191,7 @@ async def main():
     
     with st.sidebar:
         model = st.selectbox(
-            "Whisper Model", ["tiny", "base", "small", "medium", "large"], index=2, help="The model used to generate the subtitles. The bigger the model, the better the results, but the slower the generation. The tiny model is recommended for testing purposes. Medium model is enough for good results in many languages.")
+            "Whisper Model", ["tiny", "base", "small", "medium", "large"], index=4, help="The model used to generate the subtitles. The bigger the model, the better the results, but the slower the generation. The tiny model is recommended for testing purposes. Medium model is enough for good results in many languages.")
 
         # Add checkbox for using images
         use_images = st.checkbox("Use Images?", help="Check this box if you want to include images in your video")
