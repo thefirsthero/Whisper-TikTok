@@ -197,6 +197,9 @@ async def main():
         if use_images:
             # Add section to upload images
             selected_image_paths = st.file_uploader("Upload Image(s)", type=["jpg", "png"], accept_multiple_files=True, help="Upload images to include in the video")
+        
+        # Add checkbox for adding images
+        add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
     
     if not use_images:
         st.divider()
@@ -292,23 +295,24 @@ async def main():
             help="The video to generate. If you want to generate multiple videos, select them as a multiselect."
         )
 
-        st.divider()
-
-        st.subheader("Audio Settings")
-
-        add_audio = st.checkbox("Add Audio?", help="Add background audio to the video")
         mixing_percentage = 0.3  # Default mixing percentage
 
+        st.divider()
+        
         if add_audio:
+
+            st.subheader("Audio Settings")
+
             selected_audio = st.file_uploader("Choose Audio File", type=["mp3", "wav"], help="Select an audio file to add to the video")
             mixing_percentage = st.slider("Mixing Percentage", 0.0, 1.0, 0.3, help="Adjust the mixing percentage for audio")
         
-        st.divider()
+            st.divider()
         
         st.subheader("Generate Video")
 
-        # Display the "Generate Video" button only if "Add Audio?" is not selected or if an audio file was added
-        if not add_audio or (add_audio and selected_audio):
+        # Display the "Generate Video" button only if "Add Audio?" is not selected or if an audio file was added,
+        # and if "Use Images?" is not selected or if images were uploaded
+        if (not add_audio or (add_audio and selected_audio)) and (not use_images or (use_images and selected_image_paths)):
             if st.button("Generate Video"):
                 if not video_num:
                     st.error("You must select at least one video to generate")
@@ -323,6 +327,7 @@ async def main():
                                             url, non_english, upload_tiktok, verbose, videos, background_tab, video_num, max_words, add_audio, selected_audio_path, mixing_percentage, use_images, selected_image_paths)
         else:
             st.button("Generate Video", disabled=True)
+
 
 
     with RIGHT:
