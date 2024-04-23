@@ -32,8 +32,8 @@ async def parse_args():
                         help="Subtitle position", choices=[i for i in range(1, 10)], default=5, type=int)
     parser.add_argument("--font", help="Subtitle font",
                         default="Lexend Bold", type=str)
-    parser.add_argument("--font_color", help="Subtitle font color in hex format: FFF000",
-                        default="FFF000", type=str)
+    parser.add_argument("--font_color", help="Subtitle font color in hex format: 00FF00",
+                        default="#00B400", type=str)
     parser.add_argument(
         "--font_size", help="Subtitle font size", default=21, type=int)
     parser.add_argument('--max_characters', default=38,

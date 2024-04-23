@@ -138,7 +138,7 @@ Options:
   --url TEXT                YouTube URL to download as background video. (Default: <https://www.youtube.com/watch?v=intRX7BRA90>)
   --tts TEXT                Voice to use for TTS (Default: en-US-ChristopherNeural)
   --list-voices             Use `edge-tts --list-voices` to list all voices.
---random_voice              Random voice for TTS (Flag)
+  --random_voice              Random voice for TTS (Flag)
   --gender TEXT             Gender of the random TTS voice [Male|Female].
   --language TEXT           Language of the random TTS voice(e.g., en-US)
   --sub_format TEXT         Subtitle format to use [u|i|b] (Default: b) | b (Bold), u (Underline), i (Italic)

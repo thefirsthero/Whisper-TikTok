@@ -21,8 +21,8 @@ def srt_create(whisper_model, path: str, series: str, part: int, text: str, file
         'Shadow': '2',
         'Blur': '21',
         'Fontsize': kwargs.get('font_size', 21),
-        'MarginL': '0',
-        'MarginR': '0',
+        'MarginL': '60',
+        'MarginR': '60',
     }
 
     transcribe = whisper_model.transcribe(
