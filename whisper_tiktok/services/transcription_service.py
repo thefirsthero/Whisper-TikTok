@@ -94,15 +94,20 @@ class TranscriptionService(ITranscriptionService):
         # This ensures the subtitle text matches the original while keeping Whisper's timing
         transcription = self._align_with_original_text(transcription, original_text)
         
-        # Generate output files
-        transcription.to_srt_vtt(srt_file.as_posix(), word_level=True)
-        transcription.to_ass(ass_file.as_posix(), word_level=True, **options)
+        # Regroup into better phrases for smoother display
+        # This creates longer subtitle segments instead of word-by-word
+        transcription = transcription.split_by_length(max_chars=42, max_words=7)
+        
+        # Generate output files with segment-level (not word-level) for smoother playback
+        transcription.to_srt_vtt(srt_file.as_posix(), word_level=False)
+        transcription.to_ass(ass_file.as_posix(), word_level=False, **options)
         
         return (srt_file, ass_file)
     
     def _align_with_original_text(self, transcription, original_text: str):
         """Align Whisper transcription with original text to fix recognition errors."""
         import re
+        from difflib import SequenceMatcher
         
         # Clean and split original text into words, preserving punctuation
         original_words = []
@@ -116,54 +121,63 @@ class TranscriptionService(ITranscriptionService):
         
         # Flatten all words from all segments
         all_words = []
-        for segment in segments:
+        word_to_segment = {}  # Track which segment each word belongs to
+        for seg_idx, segment in enumerate(segments):
             if hasattr(segment, 'words') and segment.words:
-                all_words.extend(segment.words)
+                for word in segment.words:
+                    all_words.append(word)
+                    word_to_segment[len(all_words) - 1] = seg_idx
         
-        # Align original words with transcribed words using simple matching
         self.logger.debug(f"Aligning {len(original_words)} original words with {len(all_words)} transcribed words")
         
-        # Simple word-by-word replacement
-        min_length = min(len(original_words), len(all_words))
-        for i in range(min_length):
-            # Remove punctuation for comparison but keep original word intact
-            orig_clean = re.sub(r'[^\w]', '', original_words[i]).lower()
-            trans_clean = re.sub(r'[^\w]', '', all_words[i].word).lower()
-            
-            # Replace with original text, ensuring proper spacing
-            # Whisper adds a leading space to words except the first one
-            if i == 0:
-                all_words[i].word = original_words[i]
-            else:
-                # Add leading space for proper word separation
-                all_words[i].word = ' ' + original_words[i]
-            
-            # Log significant differences for debugging
-            if orig_clean != trans_clean:
-                self.logger.debug(f"Replaced transcription -> '{original_words[i]}'")
+        # Use sequence matching for better alignment
+        transcribed_clean = [re.sub(r'[^\w]', '', w.word).lower() for w in all_words]
+        original_clean = [re.sub(r'[^\w]', '', w).lower() for w in original_words]
         
-        # Handle remaining words
-        if len(original_words) > len(all_words):
-            self.logger.warning(
-                f"Original text has {len(original_words) - len(all_words)} more words than transcription. "
-                f"Some words may not appear in subtitles."
-            )
-        elif len(all_words) > len(original_words):
-            # Remove extra transcribed words
-            self.logger.warning(
-                f"Transcription has {len(all_words) - len(original_words)} extra words. "
-                f"Removing them."
-            )
-            # Remove extra words from segments
-            word_count = 0
-            for segment in segments:
-                if hasattr(segment, 'words') and segment.words:
-                    filtered_words = []
-                    for w in segment.words:
-                        if word_count < len(original_words):
-                            filtered_words.append(w)
-                            word_count += 1
-                    segment.words = filtered_words
+        matcher = SequenceMatcher(None, transcribed_clean, original_clean)
+        
+        # Build alignment mapping
+        alignment = []
+        used_trans_indices = set()  # Track which transcribed words we've already used
+        
+        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+            if tag == 'equal' or tag == 'replace':
+                # Map transcribed words to original words (1-to-1)
+                for i, j in zip(range(i1, i2), range(j1, j2)):
+                    if i not in used_trans_indices:
+                        alignment.append((i, j))
+                        used_trans_indices.add(i)
+            elif tag == 'delete':
+                # Transcription has extra words - skip them
+                pass
+            elif tag == 'insert':
+                # Original has words that aren't in transcription
+                # This means audio didn't say these words or Whisper missed them
+                # We'll skip them to avoid misalignment
+                pass
+        
+        # Apply alignment: replace transcribed words with original text
+        aligned_count = 0
+        for trans_idx, orig_idx in alignment:
+            if trans_idx < len(all_words) and orig_idx < len(original_words):
+                # Replace with original text, ensuring proper spacing
+                if aligned_count == 0:
+                    all_words[trans_idx].word = original_words[orig_idx]
+                else:
+                    all_words[trans_idx].word = ' ' + original_words[orig_idx]
+                aligned_count += 1
+        
+        # Remove any unaligned words from the transcription
+        aligned_indices = {idx for idx, _ in alignment}
+        for segment in segments:
+            if hasattr(segment, 'words') and segment.words:
+                segment.words = [w for i, w in enumerate(all_words) 
+                                if w in segment.words and all_words.index(w) in aligned_indices]
+        
+        self.logger.info(f"Successfully aligned {aligned_count}/{len(original_words)} words")
+        if aligned_count < len(original_words):
+            missing = len(original_words) - aligned_count
+            self.logger.warning(f"{missing} words from original text were not found in transcription")
         
         return transcription
     
