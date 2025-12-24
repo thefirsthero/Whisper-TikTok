@@ -7,7 +7,7 @@ from whisper_tiktok.interfaces.tts_service import ITTSService
 
 
 class TTSService(ITTSService):
-    """Text-to-Speech service using a hypothetical TTS engine."""
+    """Text-to-Speech service using edge-tts."""
 
     def __init__(self, logger: Logger):
         self.logger = logger

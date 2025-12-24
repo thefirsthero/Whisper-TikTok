@@ -62,13 +62,14 @@ class TTSGenerationStrategy(ProcessingStrategy):
 
         await self.tts_service.synthesize(text, output_file, voice)
         context.artifacts["audio_file"] = output_file
+        context.artifacts["original_text"] = text
 
         self.logger.info(f"Generated TTS audio: {output_file}")
         return context
 
 
 class TranscriptionStrategy(ProcessingStrategy):
-    """Strategy for transcribing audio to generate subtitles."""
+    """Strategy for generating subtitles from text and timing data."""
 
     def __init__(self, transcription_service: ITranscriptionService, logger: Logger):
         self.transcription_service = transcription_service
@@ -76,22 +77,31 @@ class TranscriptionStrategy(ProcessingStrategy):
 
     async def execute(self, context: ProcessingContext) -> ProcessingContext:
         audio_file = context.artifacts.get("audio_file")
+        original_text = context.artifacts.get("original_text")
+        
         if not audio_file:
             raise ValueError("Audio file not found in context artifacts.")
+        
+        if not original_text:
+            raise ValueError("Original text not found in context artifacts.")
 
         srt_file = context.media_path / f"{context.uuid}.srt"
         ass_file = context.media_path / f"{context.uuid}.ass"
-        self.transcription_service.transcribe(
+        
+        # Use transcription with text correction to ensure subtitles match original text
+        self.transcription_service.transcribe_with_text_correction(
             audio_file,
+            original_text,
             srt_file,
             ass_file,
             model=context.config["model"],
             options=context.config,
         )
+        
         context.artifacts["srt_file"] = srt_file
         context.artifacts["ass_file"] = ass_file
-        self.logger.info(f"Generated transcription SRT: {srt_file}")
-        self.logger.info(f"Generated transcription ASS: {ass_file}")
+        self.logger.info(f"Generated subtitles SRT: {srt_file}")
+        self.logger.info(f"Generated subtitles ASS: {ass_file}")
         return context
 
 
