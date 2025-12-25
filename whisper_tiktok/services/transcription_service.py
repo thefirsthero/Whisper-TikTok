@@ -221,8 +221,8 @@ class TranscriptionService(ITranscriptionService):
     def _generate_ass(self, text: str, word_timings: list[dict], ass_file: Path, options: dict) -> None:
         """Generate ASS subtitle file with word-level timing and styling."""
         # Extract styling options
-        font_name = options.get('font', 'Lexend Bold')
-        font_size = options.get('font_size', 24)
+        font_name = options.get('font', 'Baloo 2 ExtraBold')
+        font_size = options.get('font_size', 28)
         font_color = options.get('font_color', 'FFFFFF')
         
         # Convert font_color to ASS format (&HBBGGRR)
@@ -239,10 +239,12 @@ class TranscriptionService(ITranscriptionService):
             f.write("PlayResY: 288\n")
             f.write("ScaledBorderAndShadow: yes\n\n")
             
-            # Write styles
+            # Write styles with enhanced visual appeal
+            # Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
             f.write("[V4+ Styles]\n")
             f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
-            f.write(f"Style: Default,{font_name},{font_size},{font_color},&Hffffff,&H0,&H0,0,0,0,0,100,100,0,0,1,1,2,5,0,0,10,0\n\n")
+            # Enhanced style: thicker outline (3), larger shadow (3) for better pop and readability
+            f.write(f"Style: Default,{font_name},{font_size},{font_color},&Hffffff,&H000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,3,5,0,0,10,0\n\n")
             
             # Write events
             f.write("[Events]\n")

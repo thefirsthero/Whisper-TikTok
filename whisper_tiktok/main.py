@@ -123,13 +123,13 @@ def create(
         help="Language for random voice (e.g., en-US)",
     ),
     font: str = typer.Option(
-        "Lexend Bold",
+        "Baloo 2 ExtraBold",
         "--font",
         "-f",
         help="Subtitle font",
     ),
     font_size: int = typer.Option(
-        21,
+        28,
         "--font-size",
         help="Subtitle font size",
     ),
