@@ -221,7 +221,7 @@ class TranscriptionService(ITranscriptionService):
     def _generate_ass(self, text: str, word_timings: list[dict], ass_file: Path, options: dict) -> None:
         """Generate ASS subtitle file with word-level timing and styling."""
         # Extract styling options
-        font_name = options.get('font', 'Baloo 2 ExtraBold')
+        font_name = options.get('font', 'Impact')
         font_size = options.get('font_size', 28)
         font_color = options.get('font_color', 'FFFFFF')
         

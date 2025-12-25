@@ -123,7 +123,7 @@ def create(
         help="Language for random voice (e.g., en-US)",
     ),
     font: str = typer.Option(
-        "Baloo 2 ExtraBold",
+        "Impact",
         "--font",
         "-f",
         help="Subtitle font",

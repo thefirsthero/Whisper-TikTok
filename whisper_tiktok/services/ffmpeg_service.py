@@ -74,6 +74,7 @@ class FFmpegService:
         self.logger = logger
 
     def _build_video_filters(self, subtitles: Path) -> str:
+        # FFmpeg will use system fonts automatically via fontconfig
         return rf"crop=ih/16*9:ih,scale=w=1080:h=1920:flags=lanczos,gblur=sigma=2,ass={subtitles.as_posix()}"
 
     def _build_ffmpeg_command(
