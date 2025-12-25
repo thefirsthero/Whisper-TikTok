@@ -60,6 +60,7 @@ class VideoProcessor:
                 self.logger.info(f"Executing strategy: {strategy.__class__.__name__}")
                 context = await strategy.execute(context)
 
+            # Use the friendly filename for the output
             output_file = context.output_path / f"{self.uuid}.mp4"
 
             return ProcessingResult(
