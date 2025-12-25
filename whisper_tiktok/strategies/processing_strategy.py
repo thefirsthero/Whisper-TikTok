@@ -51,6 +51,32 @@ class TTSGenerationStrategy(ProcessingStrategy):
         self.tts_service = tts_service
         self.logger = logger
 
+    def _preprocess_text_for_tts(self, text: str) -> str:
+        """Preprocess text to improve TTS pronunciation, especially for URLs."""
+        import re
+        
+        # Handle specific domain pronunciations
+        # Replace 'coraxi' with phonetically correct pronunciation
+        text = re.sub(r'\bcoraxi\b', 'core-AX-ee', text, flags=re.IGNORECASE)
+        
+        # Replace dots in URLs with the word 'dot' so TTS says it explicitly
+        # Match URLs and replace their dots
+        def replace_url_dots(match):
+            url = match.group(0)
+            # Replace dots with ' dot '
+            url = url.replace('.', ' dot ')
+            return url
+        
+        # Match URLs (common patterns like confess.coraxi.com)
+        text = re.sub(
+            r'\b[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+\.com\b',
+            replace_url_dots,
+            text,
+            flags=re.IGNORECASE
+        )
+        
+        return text
+
     async def execute(self, context: ProcessingContext) -> ProcessingContext:
         """Integrates TTS into the pipeline"""
         text = f"{context.video_data['series']} - {context.video_data['part']}.\n"
@@ -60,9 +86,13 @@ class TTSGenerationStrategy(ProcessingStrategy):
         output_file = context.media_path / f"{context.uuid}.mp3"
         voice = context.config.get("tts_voice", "en-US-ChristopherNeural")
 
-        await self.tts_service.synthesize(text, output_file, voice)
+        # Preprocess text for better TTS pronunciation
+        tts_text = self._preprocess_text_for_tts(text)
+        self.logger.debug(f"Preprocessed text for TTS pronunciation")
+
+        await self.tts_service.synthesize(tts_text, output_file, voice)
         context.artifacts["audio_file"] = output_file
-        context.artifacts["original_text"] = text
+        context.artifacts["original_text"] = text  # Store original, not TTS-modified
 
         self.logger.info(f"Generated TTS audio: {output_file}")
         return context

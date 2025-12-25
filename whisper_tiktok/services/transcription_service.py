@@ -104,10 +104,37 @@ class TranscriptionService(ITranscriptionService):
         
         return (srt_file, ass_file)
     
+    def _preprocess_text_for_wrapping(self, text: str) -> str:
+        """Preprocess text to split URLs into separate words at dots for better wrapping."""
+        import re
+        
+        # Split URLs at dots so each part becomes a separate word
+        # This allows them to wrap across subtitle lines naturally
+        # Match URL patterns like confess.coraxi.com
+        def split_url_at_dots(match):
+            url = match.group(0)
+            # Replace dots with space+dot+space so they become separate tokens
+            # "confess.coraxi.com" becomes "confess. coraxi. com"
+            url = url.replace('.', '. ')
+            return url
+        
+        # Match URLs (common patterns)
+        text = re.sub(
+            r'\b(?:https?://)?(?:www\.)?[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+\.(?:com|org|net|edu|gov)\b',
+            split_url_at_dots,
+            text,
+            flags=re.IGNORECASE
+        )
+        
+        return text
+    
     def _align_with_original_text(self, transcription, original_text: str):
         """Align Whisper transcription with original text to fix recognition errors."""
         import re
         from difflib import SequenceMatcher
+        
+        # Preprocess text to add URL break points
+        original_text = self._preprocess_text_for_wrapping(original_text)
         
         # Clean and split original text into words, preserving punctuation
         original_words = []
