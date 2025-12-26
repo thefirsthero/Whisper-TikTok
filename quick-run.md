@@ -3,7 +3,7 @@
 ## 🚀 Basic Command
 
 ```powershell
-C:/GitClones/Whisper-TikTok/.venv/Scripts/python.exe -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs?si=KD2Z7X2snKd0XyTR --tts en-ZA-LeahNeural --font-color 800080
+C:/GitClones/Whisper-TikTok/.venv/Scripts/python.exe -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs?si=KD2Z7X2snKd0XyTR --tts en-ZA-LeahNeural --font-color FF1493
 ```
 
 ## 📝 Setup
@@ -110,7 +110,7 @@ South African English, female voice with great pronunciation.
 ### Current Color
 
 ```powershell
---font-color 800080              # Purple
+--font-color FF1493              # Deep Pink (default)
 ```
 
 ### Popular Color Choices
@@ -118,8 +118,8 @@ South African English, female voice with great pronunciation.
 **Emotional/Romance:**
 
 ```powershell
---font-color 800080              # Purple (current)
---font-color FF1493              # Deep Pink
+--font-color FF1493              # Deep Pink (default)
+--font-color 800080              # Purple
 --font-color FF69B4              # Hot Pink
 --font-color DC143C              # Crimson
 ```
@@ -145,7 +145,7 @@ South African English, female voice with great pronunciation.
 **Classic:**
 
 ```powershell
---font-color FFFFFF              # White (default)
+--font-color FFFFFF              # White
 --font-color FFF000              # Yellow-white
 ```
 
@@ -183,13 +183,13 @@ South African English, female voice with great pronunciation.
 ### Default Confession Video
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color 800080
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493
 ```
 
 ### With Custom Font
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color 800080 --font "Arial Black"
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black"
 ```
 
 ### Emotional Style (Pink text, elegant font)
@@ -207,7 +207,7 @@ python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5
 ### American Voice Style
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-US-AriaNeural --font-color 800080
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-US-AriaNeural --font-color FF1493
 ```
 
 ## 🔧 Technical Notes
@@ -229,7 +229,7 @@ Videos are saved to: `output/[uuid]/[uuid].mp4`
 
 ## 💡 Pro Tips
 
-1. **Purple works great for confession videos** - it's emotional and stands out
+1. **Deep pink works great for confession videos** - it's emotional and stands out
 2. **Impact font is perfect for readability** on mobile screens
 3. **Test different voices** - South African accent adds unique flavor
 4. **Keep font size 28-32** for mobile viewing
@@ -244,5 +244,5 @@ Videos are saved to: `output/[uuid]/[uuid].mp4`
 
 ---
 
-**Last Updated:** December 25, 2025
-**Version:** 1.0
+**Last Updated:** December 26, 2025
+**Version:** 1.1

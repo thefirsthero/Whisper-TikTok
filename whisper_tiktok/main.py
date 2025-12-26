@@ -134,7 +134,7 @@ def create(
         help="Subtitle font size",
     ),
     font_color: str = typer.Option(
-        "FFF000",
+        "FF1493",
         "--font-color",
         "-c",
         help="Subtitle color (hex format)",

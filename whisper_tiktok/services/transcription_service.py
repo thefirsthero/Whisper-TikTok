@@ -223,7 +223,7 @@ class TranscriptionService(ITranscriptionService):
         # Extract styling options
         font_name = options.get('font', 'Impact')
         font_size = options.get('font_size', 28)
-        font_color = options.get('font_color', 'FFFFFF')
+        font_color = options.get('font_color', 'FF1493')
         
         # Convert font_color to ASS format (&HBBGGRR)
         if font_color and not font_color.startswith('&H'):

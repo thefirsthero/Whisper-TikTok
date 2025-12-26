@@ -79,7 +79,7 @@ class TTSGenerationStrategy(ProcessingStrategy):
 
     async def execute(self, context: ProcessingContext) -> ProcessingContext:
         """Integrates TTS into the pipeline"""
-        text = f"{context.video_data['series']} - {context.video_data['part']}.\n"
+        text = f"{context.video_data['series']} - part {context.video_data['part']}.\n"
         text += f"{context.video_data['text']}\n"
         text += f"{context.video_data['outro']}"
 
