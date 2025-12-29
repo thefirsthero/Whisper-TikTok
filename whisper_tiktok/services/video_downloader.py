@@ -17,10 +17,12 @@ class VideoDownloaderService(IVideoDownloader):
         self.logger = logger
 
     def download(self, url: str, output_dir: Path) -> Path:
-        """Download video from URL."""
+        """Download video from URL at highest quality."""
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        command = rf"yt-dlp -f bestvideo[ext=mp4] --restrict-filenames -o %(id)s.%(ext)s {url}"
+        # Download highest quality video, prefer MP4 but fallback to best available
+        # Then remux to MP4 if needed to ensure compatibility
+        command = rf"yt-dlp -f 'bestvideo[ext=mp4][height>=1080]/bestvideo[height>=1080]/bestvideo[ext=mp4]/bestvideo' --merge-output-format mp4 --restrict-filenames -o %(id)s.%(ext)s {url}"
         result = self.executor.execute(command, cwd=output_dir)
 
         if result.returncode != 0:
