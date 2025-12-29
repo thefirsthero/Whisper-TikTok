@@ -8,3 +8,7 @@ class IVideoDownloader(ABC):
     @abstractmethod
     def download(self, url: str, output_dir: Path) -> Path:
         """Download video from URL to output directory."""
+
+    @abstractmethod
+    def download_audio(self, url: str, output_dir: Path) -> Path:
+        """Download audio only from URL to output directory."""

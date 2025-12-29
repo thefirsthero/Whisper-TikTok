@@ -32,3 +32,20 @@ class VideoDownloaderService(IVideoDownloader):
             raise VideoDownloadError("No video file found after download")
 
         return videos[-1]  # Most recent
+
+    def download_audio(self, url: str, output_dir: Path) -> Path:
+        """Download audio only from URL."""
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        command = rf"yt-dlp -x --audio-format mp3 --restrict-filenames -o %(id)s.%(ext)s {url}"
+        result = self.executor.execute(command, cwd=output_dir)
+
+        if result.returncode != 0:
+            raise VideoDownloadError(f"Failed to download audio: {result.stderr}")
+
+        # Find downloaded file
+        audios = list(output_dir.glob("*.mp3"))
+        if not audios:
+            raise VideoDownloadError("No audio file found after download")
+
+        return audios[-1]  # Most recent

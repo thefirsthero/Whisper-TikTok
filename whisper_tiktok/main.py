@@ -99,6 +99,19 @@ def create(
         "-u",
         help="YouTube URL for background video",
     ),
+    background_audio_url: Optional[str] = typer.Option(
+        None,
+        "--background-audio-url",
+        "-a",
+        help="YouTube URL for background audio (music/ambience)",
+    ),
+    audio_mix: int = typer.Option(
+        30,
+        "--audio-mix",
+        help="Background audio volume percentage (0-100, where 100 means equal to voice)",
+        min=0,
+        max=100,
+    ),
     tts_voice: str = typer.Option(
         "en-US-ChristopherNeural",
         "--tts",
@@ -255,6 +268,8 @@ def create(
         config_dict = {
             "model": model,
             "background_url": background_url,
+            "background_audio_url": background_audio_url,
+            "audio_mix": audio_mix,
             "tts_voice": tts_voice,
             "tts_rate": rate,
             "upload_tiktok": upload_tiktok,

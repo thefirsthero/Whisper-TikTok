@@ -5,6 +5,8 @@ import re
 from whisper_tiktok.container import Container
 from whisper_tiktok.processors.video_processor import VideoProcessor
 from whisper_tiktok.strategies.processing_strategy import (
+    AudioMixingStrategy,
+    DownloadBackgroundAudioStrategy,
     DownloadBackgroundStrategy,
     ProcessingStrategy,
     TikTokUploadStrategy,
@@ -54,8 +56,14 @@ class VideoCreatorFactory:
             DownloadBackgroundStrategy(
                 self.container.video_downloader(), self.container.logger()
             ),
+            DownloadBackgroundAudioStrategy(
+                self.container.video_downloader(), self.container.logger()
+            ),
             TTSGenerationStrategy(
                 self.container.tts_service(), self.container.logger()
+            ),
+            AudioMixingStrategy(
+                self.container.ffmpeg_service(), self.container.logger()
             ),
             TranscriptionStrategy(
                 self.container.transcription_service(), self.container.logger()

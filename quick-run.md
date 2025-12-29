@@ -6,6 +6,26 @@
 C:/GitClones/Whisper-TikTok/.venv/Scripts/python.exe -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs?si=KD2Z7X2snKd0XyTR --tts en-ZA-LeahNeural --font-color FF1493
 ```
 
+## 🎵 Background Audio
+
+You can add background music or ambient audio to your videos:
+
+```powershell
+# Add background music at 30% volume (default)
+--background-audio-url "https://www.youtube.com/watch?v=YOUR_AUDIO_URL"
+
+# Adjust background audio volume (0-100)
+--audio-mix 50                   # 50% volume
+--audio-mix 20                   # Subtle background (20%)
+--audio-mix 80                   # Prominent background (80%)
+```
+
+**Example with background music:**
+
+```powershell
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 25
+```
+
 ## 📝 Setup
 
 Your `video.json` should have this structure:
@@ -220,6 +240,18 @@ python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5
 
 ```powershell
 python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --rate "-25%"
+```
+
+### With Background Music
+
+```powershell
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 25
+```
+
+### Full Customization (Music, Faster Speech, Custom Font)
+
+```powershell
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black" --font-size 32 --rate "+25%" --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 30
 ```
 
 ### Bold Style (Red text, impact font, larger)

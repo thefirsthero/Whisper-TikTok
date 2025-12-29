@@ -44,6 +44,24 @@ class DownloadBackgroundStrategy(ProcessingStrategy):
         return context
 
 
+class DownloadBackgroundAudioStrategy(ProcessingStrategy):
+    """Strategy for downloading background audio."""
+
+    def __init__(self, downloader: IVideoDownloader, logger: Logger):
+        self.downloader = downloader
+        self.logger = logger
+
+    async def execute(self, context: ProcessingContext) -> ProcessingContext:
+        url = context.config.get("background_audio_url")
+        if url:
+            background_audio_path = self.downloader.download_audio(url, Path("background"))
+            context.artifacts["background_audio"] = background_audio_path
+            self.logger.info(f"Downloaded background audio: {background_audio_path}")
+        else:
+            self.logger.info("No background audio URL provided, skipping")
+        return context
+
+
 class TTSGenerationStrategy(ProcessingStrategy):
     """Strategy for generating TTS audio."""
 
@@ -96,6 +114,45 @@ class TTSGenerationStrategy(ProcessingStrategy):
         context.artifacts["original_text"] = text  # Store original, not TTS-modified
 
         self.logger.info(f"Generated TTS audio: {output_file}")
+        return context
+
+
+class AudioMixingStrategy(ProcessingStrategy):
+    """Strategy for mixing TTS audio with background audio."""
+
+    def __init__(self, ffmpeg_service: FFmpegService, logger: Logger):
+        self.ffmpeg_service = ffmpeg_service
+        self.logger = logger
+
+    async def execute(self, context: ProcessingContext) -> ProcessingContext:
+        """Mix TTS audio with background audio if provided."""
+        tts_audio = context.artifacts["audio_file"]
+        background_audio = context.artifacts.get("background_audio")
+        
+        if background_audio:
+            # Calculate volume levels based on mix percentage
+            audio_mix_percent = context.config.get("audio_mix", 30)
+            tts_volume = 1.0  # Keep TTS at full volume
+            background_volume = audio_mix_percent / 100.0  # Convert percentage to 0.0-1.0
+            
+            # Create mixed audio file
+            mixed_audio = context.media_path / f"{context.uuid}_mixed.mp3"
+            self.ffmpeg_service.mix_audio(
+                tts_audio=tts_audio,
+                background_audio=background_audio,
+                output=mixed_audio,
+                tts_volume=tts_volume,
+                background_volume=background_volume,
+            )
+            
+            # Replace the audio file with the mixed version
+            context.artifacts["audio_file"] = mixed_audio
+            self.logger.info(
+                f"Mixed audio with background at {audio_mix_percent}% volume: {mixed_audio}"
+            )
+        else:
+            self.logger.info("No background audio to mix, using TTS audio only")
+        
         return context
 
 

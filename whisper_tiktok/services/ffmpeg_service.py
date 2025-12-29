@@ -121,3 +121,41 @@ class FFmpegService:
             raise FFmpegError(f"Failed to probe media: {result.stderr}")
 
         return MediaInfo.from_json(result)
+
+    def mix_audio(
+        self,
+        tts_audio: Path,
+        background_audio: Path,
+        output: Path,
+        tts_volume: float = 1.0,
+        background_volume: float = 0.3,
+    ) -> Path:
+        """Mix TTS audio with background audio at specified volumes.
+        
+        Args:
+            tts_audio: Path to the TTS audio file
+            background_audio: Path to the background audio file
+            output: Path for the mixed audio output
+            tts_volume: Volume multiplier for TTS (0.0 to 1.0+)
+            background_volume: Volume multiplier for background audio (0.0 to 1.0+)
+            
+        Returns:
+            Path to the mixed audio file
+        """
+        # Use amix filter to mix the two audio streams
+        # Volume levels are normalized (0.0 to 1.0)
+        command = (
+            f"ffmpeg -i {tts_audio.as_posix()} -i {background_audio.as_posix()} "
+            f"-filter_complex \""
+            f"[0:a]volume={tts_volume}[a1];"
+            f"[1:a]volume={background_volume}[a2];"
+            f"[a1][a2]amix=inputs=2:duration=first:dropout_transition=2\" "
+            f"-c:a libmp3lame -q:a 2 {output.as_posix()} -y"
+        )
+        
+        result = self.executor.execute(command)
+        
+        if result.returncode != 0:
+            raise FFmpegError(f"Failed to mix audio: {result.stderr}")
+        
+        return output

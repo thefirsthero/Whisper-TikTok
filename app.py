@@ -43,6 +43,8 @@ def df_to_json(df):
 async def run_pipeline(
     model,
     background_url,
+    background_audio_url,
+    audio_mix,
     tts_voice,
     random_voice,
     gender,
@@ -134,6 +136,8 @@ async def run_pipeline(
         config_dict = {
             "model": model,
             "background_url": background_url,
+            "background_audio_url": background_audio_url,
+            "audio_mix": audio_mix,
             "tts_voice": tts_voice,
             "tts_rate": rate,
             "Fontname": font,
@@ -229,6 +233,18 @@ async def main():
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             help="YouTube URL for background video",
         )
+        background_audio_url = st.text_input(
+            "Background Audio URL (Optional)",
+            "",
+            help="YouTube URL for background music/audio. Leave empty for no background audio.",
+        )
+        audio_mix = st.slider(
+            "Background Audio Volume",
+            min_value=0,
+            max_value=100,
+            value=30,
+            help="Volume percentage for background audio (0=muted, 100=equal to voice)",
+        )
         clean = st.checkbox(
             "Clean Folders", help="Clean media and output folders before processing"
         )
@@ -284,6 +300,8 @@ async def main():
             run_pipeline(
                 model,
                 background_url,
+                background_audio_url if background_audio_url else None,
+                audio_mix,
                 tts_voice,
                 random_voice,
                 gender,

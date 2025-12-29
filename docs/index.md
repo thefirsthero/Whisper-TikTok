@@ -128,6 +128,12 @@ python -m whisper_tiktok.main create --rate "+50%"  # 50% faster
 python -m whisper_tiktok.main create --rate "-25%"  # 25% slower
 ```
 
+- Add background music or ambient audio:
+
+```bash
+python -m whisper_tiktok.main create --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 30
+```
+
 - Generate a TikTok video with a random TTS voice:
 
 ```bash
