@@ -147,6 +147,12 @@ def create(
         min=1,
         max=9,
     ),
+    rate: Optional[str] = typer.Option(
+        None,
+        "--rate",
+        "-r",
+        help="Speech rate (e.g., +50% for faster, -25% for slower)",
+    ),
     upload_tiktok: bool = typer.Option(
         False,
         "--upload-tiktok",
@@ -250,6 +256,7 @@ def create(
             "model": model,
             "background_url": background_url,
             "tts_voice": tts_voice,
+            "tts_rate": rate,
             "upload_tiktok": upload_tiktok,
             "Fontname": font,
             "Fontsize": font_size,

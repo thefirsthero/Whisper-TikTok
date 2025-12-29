@@ -51,6 +51,7 @@ async def run_pipeline(
     font_size,
     font_color,
     sub_position,
+    rate,
     clean,
     verbose,
 ):
@@ -134,6 +135,7 @@ async def run_pipeline(
             "model": model,
             "background_url": background_url,
             "tts_voice": tts_voice,
+            "tts_rate": rate,
             "Fontname": font,
             "Fontsize": font_size,
             "highlight_color": processed_font_color,
@@ -251,6 +253,12 @@ async def main():
             )
             gender = None
             language = None
+        
+        rate = st.text_input(
+            "Speech Rate",
+            "",
+            help="Speech rate (e.g., +50% for faster, -25% for slower). Leave empty for normal speed.",
+        )
 
     st.write("#### Subtitle Settings")
     col3, col4, col5 = st.columns(3)
@@ -284,6 +292,7 @@ async def main():
                 font_size,
                 font_color,
                 sub_position,
+                rate if rate else None,
                 clean,
                 verbose,
             )

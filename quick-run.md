@@ -159,6 +159,18 @@ South African English, female voice with great pronunciation.
 --font-size 32                   # Larger
 ```
 
+### Speech Rate
+
+```powershell
+--rate "+50%"                    # 50% faster speech
+--rate "+25%"                    # 25% faster speech
+--rate "-25%"                    # 25% slower speech
+--rate "-50%"                    # 50% slower speech
+# Leave empty for normal speed
+```
+
+Note: Use quotes when specifying negative values to avoid shell interpretation issues.
+
 ### Whisper Model
 
 ```powershell
@@ -196,6 +208,18 @@ python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5
 
 ```powershell
 python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Gabriola" --font-size 30
+```
+
+### Faster Speech (50% speed increase)
+
+```powershell
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --rate "+50%"
+```
+
+### Slower, More Dramatic Speech
+
+```powershell
+python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --rate "-25%"
 ```
 
 ### Bold Style (Red text, impact font, larger)

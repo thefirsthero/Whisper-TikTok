@@ -121,6 +121,13 @@ python -m whisper_tiktok.main create --background-url https://www.youtube.com/wa
 python -m whisper_tiktok.main create --font_color FFF000
 ```
 
+- Adjust speech rate for faster or slower voiceover:
+
+```bash
+python -m whisper_tiktok.main create --rate "+50%"  # 50% faster
+python -m whisper_tiktok.main create --rate "-25%"  # 25% slower
+```
+
 - Generate a TikTok video with a random TTS voice:
 
 ```bash

@@ -17,6 +17,7 @@ class TTSService(ITTSService):
         text: str,
         output_file: Path,
         voice: str = "en-US-ChristopherNeural",
+        rate: str = None,
     ) -> None:
         """
         Synthesize speech from text and save to output file.
@@ -25,7 +26,11 @@ class TTSService(ITTSService):
             text (str): The text to be converted to speech.
             output_file (Path): The path to save the synthesized audio file.
             voice (str): The voice to be used for synthesis.
+            rate (str): The speech rate (e.g., "+50%", "-25%"). Default is normal speed.
         """
-        self.logger.debug(f"Synthesizing speech to {output_file} using voice {voice}")
-        communicate = edge_tts.Communicate(text, voice)
+        self.logger.debug(
+            f"Synthesizing speech to {output_file} using voice {voice}"
+            + (f" at rate {rate}" if rate else "")
+        )
+        communicate = edge_tts.Communicate(text, voice, rate=rate)
         await communicate.save(output_file.as_posix())

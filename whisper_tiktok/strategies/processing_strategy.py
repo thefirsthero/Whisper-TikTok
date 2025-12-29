@@ -85,12 +85,13 @@ class TTSGenerationStrategy(ProcessingStrategy):
 
         output_file = context.media_path / f"{context.uuid}.mp3"
         voice = context.config.get("tts_voice", "en-US-ChristopherNeural")
+        rate = context.config.get("tts_rate")
 
         # Preprocess text for better TTS pronunciation
         tts_text = self._preprocess_text_for_tts(text)
         self.logger.debug(f"Preprocessed text for TTS pronunciation")
 
-        await self.tts_service.synthesize(tts_text, output_file, voice)
+        await self.tts_service.synthesize(tts_text, output_file, voice, rate)
         context.artifacts["audio_file"] = output_file
         context.artifacts["original_text"] = text  # Store original, not TTS-modified
 
