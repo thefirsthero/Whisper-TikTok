@@ -25,6 +25,27 @@ def rgb_to_bgr(rgb: str) -> str:
     return b + g + r
 
 
+def compute_contrast_color(rgb: str) -> str:
+    """Return a contrasting RGB hex (no #) for readability.
+
+    Uses relative luminance: if the color is light, return dark (#202020); if dark, return light (#F5F5F5).
+    """
+    if rgb.startswith("#"):
+        rgb = rgb[1:]
+    if len(rgb) != 6:
+        raise ValueError("RGB hex must be 6 characters long")
+
+    r = int(rgb[0:2], 16)
+    g = int(rgb[2:4], 16)
+    b = int(rgb[4:6], 16)
+
+    # Relative luminance (approx)
+    luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    # Threshold near mid; choose soft light or dark
+    return "202020" if luminance > 180 else "F5F5F5"
+
+
 if __name__ == "__main__":
     # Example usage
     rgb_color = "#1A2B3C"

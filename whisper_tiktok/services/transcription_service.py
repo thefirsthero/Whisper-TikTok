@@ -94,13 +94,27 @@ class TranscriptionService(ITranscriptionService):
         # This ensures the subtitle text matches the original while keeping Whisper's timing
         transcription = self._align_with_original_text(transcription, original_text)
         
-        # Regroup into better phrases for smoother display
-        # This creates longer subtitle segments instead of word-by-word
-        transcription = transcription.split_by_length(max_chars=42, max_words=7)
-        
-        # Generate output files with segment-level (not word-level) for smoother playback
+        # Extract word timings after alignment (flatten across segments)
+        word_timings: list[dict] = []
+        if hasattr(transcription, 'segments'):
+            for segment in transcription.segments:
+                if hasattr(segment, 'words') and segment.words:
+                    for w in segment.words:
+                        # Ensure we have required attributes
+                        try:
+                            word_timings.append({
+                                'word': str(w.word).strip(),
+                                'start': float(w.start),
+                                'end': float(w.end),
+                            })
+                        except Exception:
+                            continue
+
+        # Generate SRT (segment-level) for readability
         transcription.to_srt_vtt(srt_file.as_posix(), word_level=False)
-        transcription.to_ass(ass_file.as_posix(), word_level=False, **options)
+
+        # Generate ASS with karaoke-style highlighting using our custom generator
+        self._generate_ass(original_text, word_timings, ass_file, options)
         
         return (srt_file, ass_file)
     
@@ -224,11 +238,13 @@ class TranscriptionService(ITranscriptionService):
         font_name = options.get('font', 'Impact')
         font_size = options.get('font_size', 28)
         font_color = options.get('font_color', 'FF1493')
+        highlight_color = options.get('highlight_color', 'FFFFFF')
         
-        # Convert font_color to ASS format (&HBBGGRR)
+        # Convert colors to ASS format (&HBBGGRR)
         if font_color and not font_color.startswith('&H'):
-            # Handle hex color like "800080" -> "&H800080"
             font_color = f"&H{font_color}"
+        if highlight_color and not highlight_color.startswith('&H'):
+            highlight_color = f"&H{highlight_color}"
         
         # Write ASS file
         with open(ass_file, 'w', encoding='utf-8') as f:
@@ -244,7 +260,7 @@ class TranscriptionService(ITranscriptionService):
             f.write("[V4+ Styles]\n")
             f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
             # Enhanced style: thicker outline (3), larger shadow (3) for better pop and readability
-            f.write(f"Style: Default,{font_name},{font_size},{font_color},&Hffffff,&H000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,3,5,0,0,10,0\n\n")
+            f.write(f"Style: Default,{font_name},{font_size},{font_color},{highlight_color},&H000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,3,5,0,0,10,0\n\n")
             
             # Write events
             f.write("[Events]\n")

@@ -152,6 +152,12 @@ def create(
         "-c",
         help="Subtitle color (hex format)",
     ),
+    highlight_color: Optional[str] = typer.Option(
+        None,
+        "--highlight-color",
+        "-H",
+        help="Highlight color for currently spoken word (hex RGB, e.g., FFD700)",
+    ),
     sub_position: int = typer.Option(
         5,
         "--sub-position",
@@ -238,11 +244,18 @@ def create(
                 logger.error("Voice validation failed: %s", e)
                 raise typer.Exit(code=1) from e
 
-        # Process font color
+        # Process font color (primary)
         processed_font_color = font_color.lower()
         if processed_font_color.startswith("#"):
             processed_font_color = processed_font_color[1:]
         processed_font_color = rgb_to_bgr(processed_font_color)
+
+        # Process highlight color (secondary for karaoke). Default: FFC7DC
+        raw_highlight = highlight_color or "FFC7DC"
+        processed_highlight_color = raw_highlight.lower()
+        if processed_highlight_color.startswith("#"):
+            processed_highlight_color = processed_highlight_color[1:]
+        processed_highlight_color = rgb_to_bgr(processed_highlight_color)
 
         # Clean folders if requested
         if clean:
@@ -273,9 +286,14 @@ def create(
             "tts_voice": tts_voice,
             "tts_rate": rate,
             "upload_tiktok": upload_tiktok,
+            # Subtitle styling for custom ASS generation
+            "font": font,
+            "font_size": font_size,
+            "font_color": processed_font_color,
+            "highlight_color": processed_highlight_color,
+            # Also include stable_whisper style keys for compatibility
             "Fontname": font,
             "Fontsize": font_size,
-            "highlight_color": processed_font_color,
             "Alignment": sub_position,
             "BorderStyle": "1",
             "Outline": "1",

@@ -207,6 +207,19 @@ South African English, female voice with great pronunciation.
 
 Note: Use quotes when specifying negative values to avoid shell interpretation issues.
 
+### Highlight Color (Current Word)
+
+Use a secondary highlight color for the word currently being spoken (ASS karaoke effect):
+
+```powershell
+--highlight-color FFC7DC         # Default light pink (pairs with Deep Pink font)
+--highlight-color FF7BB3         # Alternate pink
+--highlight-color 00FFFF         # Cyan (high contrast option)
+--highlight-color FFFFFF         # White
+```
+
+Tip: Default is `FFC7DC` if you omit `--highlight-color`.
+
 ### Whisper Model
 
 ```powershell
@@ -286,7 +299,7 @@ python -m whisper_tiktok.main create --background-video "background/your_video.m
 Here's a complete working example using actual video and audio files:
 
 ```powershell
-python -m whisper_tiktok.main create --background-video "background\YouTube_Minecraft-Parkour-Gameplay-No-Copyright_Media_1080p.mp4" --tts en-ZA-LeahNeural --background-audio "background_audio/no_copyright_music_in_dreamland__background_music.wav" --audio-mix 25 --rate "+20%"
+python -m whisper_tiktok.main create --background-video "background\YouTube_Minecraft-Parkour-Gameplay-No-Copyright_Media_1080p.mp4" --tts en-ZA-LeahNeural --background-audio "background_audio/no_copyright_music_in_dreamland__background_music.wav" --audio-mix 25 --rate "+20%" --highlight-color FFC7DC
 ```
 
 This command:
@@ -294,6 +307,7 @@ This command:
 - Uses a Minecraft gameplay video as background
 - Synthesizes speech 20% faster for more engaging pacing
 - Mixes in royalty-free background music at 25% volume
+- Highlights the currently spoken word in light pink (default, pairs with Deep Pink)
 - Uses South African English voice for unique flavor
 
 ## 🔧 Technical Notes
