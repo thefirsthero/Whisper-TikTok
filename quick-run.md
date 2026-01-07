@@ -2,17 +2,22 @@
 
 ## 🚀 Basic Command
 
+Before running, make sure you have:
+
+1. A background video file in the `background/` directory
+2. Optionally, a background audio file in the `background_audio/` directory
+
 ```powershell
-C:/GitClones/Whisper-TikTok/.venv/Scripts/python.exe -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs?si=KD2Z7X2snKd0XyTR --tts en-ZA-LeahNeural --font-color FF1493
+C:/GitClones/Whisper-TikTok/.venv/Scripts/python.exe -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493
 ```
 
 ## 🎵 Background Audio
 
-You can add background music or ambient audio to your videos:
+You can add background music or ambient audio to your videos using local files:
 
 ```powershell
 # Add background music at 30% volume (default)
---background-audio-url "https://www.youtube.com/watch?v=YOUR_AUDIO_URL"
+--background-audio "background_audio/your_audio.mp3"
 
 # Adjust background audio volume (0-100)
 --audio-mix 50                   # 50% volume
@@ -23,10 +28,19 @@ You can add background music or ambient audio to your videos:
 **Example with background music:**
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 25
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --background-audio "background_audio/your_audio.mp3" --audio-mix 25
 ```
 
 ## 📝 Setup
+
+### 1. Prepare Your Videos and Audio
+
+Place your video and audio files in the appropriate directories:
+
+- Background video: `background/your_video.mp4`
+- Background audio: `background_audio/your_audio.mp3`
+
+### 2. Configure video.json
 
 Your `video.json` should have this structure:
 
@@ -36,7 +50,9 @@ Your `video.json` should have this structure:
     "series": "Your Confessions",
     "part": "7",
     "outro": "Visit confess.coraxi.com to anonymously confess",
-    "text": "Your confession text here..."
+    "text": "Your confession text here...",
+    "background_video_path": "background/your_video.mp4",
+    "background_audio_path": "background_audio/your_audio.mp3"
   }
 ]
 ```
@@ -205,9 +221,8 @@ Note: Use quotes when specifying negative values to avoid shell interpretation i
 ### Background Video
 
 ```powershell
---background-url "YOUR_YOUTUBE_URL"
-# Or use a local file:
---background-video "path/to/video.mp4"
+# Use a local video file
+--background-video "background/your_video.mp4"
 ```
 
 ## 📋 Complete Examples
@@ -215,55 +230,55 @@ Note: Use quotes when specifying negative values to avoid shell interpretation i
 ### Default Confession Video
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493
 ```
 
 ### With Custom Font
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black"
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black"
 ```
 
 ### Emotional Style (Pink text, elegant font)
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Gabriola" --font-size 30
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --font "Gabriola" --font-size 30
 ```
 
 ### Faster Speech (50% speed increase)
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --rate "+50%"
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --rate "+50%"
 ```
 
 ### Slower, More Dramatic Speech
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --rate "-25%"
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --rate "-25%"
 ```
 
 ### With Background Music
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 25
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --background-audio "background_audio/your_audio.mp3" --audio-mix 25
 ```
 
 ### Full Customization (Music, Faster Speech, Custom Font)
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black" --font-size 32 --rate "+25%" --background-audio-url "https://www.youtube.com/watch?v=DSWYAclv2I8" --audio-mix 30
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF1493 --font "Arial Black" --font-size 32 --rate "+25%" --background-audio "background_audio/your_audio.mp3" --audio-mix 30
 ```
 
 ### Bold Style (Red text, impact font, larger)
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-ZA-LeahNeural --font-color FF0000 --font "Impact" --font-size 32
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-ZA-LeahNeural --font-color FF0000 --font "Impact" --font-size 32
 ```
 
 ### American Voice Style
 
 ```powershell
-python -m whisper_tiktok.main create --background-url https://youtu.be/u7kdVe8q5zs --tts en-US-AriaNeural --font-color FF1493
+python -m whisper_tiktok.main create --background-video background/your_video.mp4 --tts en-US-AriaNeural --font-color FF1493
 ```
 
 ## 🔧 Technical Notes
@@ -290,15 +305,18 @@ Videos are saved to: `output/[uuid]/[uuid].mp4`
 3. **Test different voices** - South African accent adds unique flavor
 4. **Keep font size 28-32** for mobile viewing
 5. **Use bold fonts** - better visibility over video backgrounds
+6. **Pre-download your videos** - No more YouTube dependency!
 
 ## 🎬 Quick Start Workflow
 
-1. Edit your confession in `video.json`
-2. Run the command with your preferred options
-3. Video will be in `output/[uuid]/[uuid].mp4`
-4. Upload to TikTok!
+1. Download or prepare your background video and audio files
+2. Place them in `background/` and `background_audio/` directories
+3. Edit your confession in `video.json` with paths to your files
+4. Run the command with your preferred options
+5. Video will be in `output/[uuid]/[uuid].mp4`
+6. Upload to TikTok!
 
 ---
 
-**Last Updated:** December 26, 2025
-**Version:** 1.1
+**Last Updated:** January 7, 2026
+**Version:** 2.0 - Now using local files instead of YouTube downloads!

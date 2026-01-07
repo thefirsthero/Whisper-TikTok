@@ -6,8 +6,8 @@ from whisper_tiktok.container import Container
 from whisper_tiktok.processors.video_processor import VideoProcessor
 from whisper_tiktok.strategies.processing_strategy import (
     AudioMixingStrategy,
-    DownloadBackgroundAudioStrategy,
-    DownloadBackgroundStrategy,
+    UseLocalAudioStrategy,
+    UseLocalVideoStrategy,
     ProcessingStrategy,
     TikTokUploadStrategy,
     TranscriptionStrategy,
@@ -53,11 +53,11 @@ class VideoCreatorFactory:
     def _build_strategies(self, config: dict) -> list[ProcessingStrategy]:
         """Build processing pipeline based on config."""
         strategies = [
-            DownloadBackgroundStrategy(
-                self.container.video_downloader(), self.container.logger()
+            UseLocalVideoStrategy(
+                self.container.logger()
             ),
-            DownloadBackgroundAudioStrategy(
-                self.container.video_downloader(), self.container.logger()
+            UseLocalAudioStrategy(
+                self.container.logger()
             ),
             TTSGenerationStrategy(
                 self.container.tts_service(), self.container.logger()

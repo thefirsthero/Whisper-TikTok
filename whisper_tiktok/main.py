@@ -93,17 +93,17 @@ def create(
         "-m",
         help="Whisper model size [tiny|base|small|medium|large|turbo]",
     ),
-    background_url: str = typer.Option(
-        "https://www.youtube.com/watch?v=intRX7BRA90",
-        "--background-url",
-        "-u",
-        help="YouTube URL for background video",
+    background_video_path: str = typer.Option(
+        "background/your_video.mp4",
+        "--background-video",
+        "-b",
+        help="Path to local background video file",
     ),
-    background_audio_url: Optional[str] = typer.Option(
+    background_audio_path: Optional[str] = typer.Option(
         None,
-        "--background-audio-url",
+        "--background-audio",
         "-a",
-        help="YouTube URL for background audio (music/ambience)",
+        help="Path to local background audio file (music/ambience)",
     ),
     audio_mix: int = typer.Option(
         30,
@@ -182,7 +182,7 @@ def create(
         help="Enable verbose logging",
     ),
 ):
-    """Create videos from text content."""
+    """Create videos from text content using local background video and audio files."""
 
     # Setup logging
     log_dir = Path.cwd() / "logs"
@@ -267,8 +267,8 @@ def create(
         container = Container()
         config_dict = {
             "model": model,
-            "background_url": background_url,
-            "background_audio_url": background_audio_url,
+            "background_video_path": background_video_path,
+            "background_audio_path": background_audio_path,
             "audio_mix": audio_mix,
             "tts_voice": tts_voice,
             "tts_rate": rate,

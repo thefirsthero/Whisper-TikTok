@@ -42,8 +42,8 @@ def df_to_json(df):
 
 async def run_pipeline(
     model,
-    background_url,
-    background_audio_url,
+    background_video_path,
+    background_audio_path,
     audio_mix,
     tts_voice,
     random_voice,
@@ -135,8 +135,8 @@ async def run_pipeline(
         container = Container()
         config_dict = {
             "model": model,
-            "background_url": background_url,
-            "background_audio_url": background_audio_url,
+            "background_video_path": background_video_path,
+            "background_audio_path": background_audio_path,
             "audio_mix": audio_mix,
             "tts_voice": tts_voice,
             "tts_rate": rate,
@@ -228,15 +228,15 @@ async def main():
             index=5,
             help="Whisper model size [tiny|base|small|medium|large|turbo]",
         )
-        background_url = st.text_input(
-            "Background Video URL",
-            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-            help="YouTube URL for background video",
+        background_video_path = st.text_input(
+            "Background Video Path",
+            "background/your_video.mp4",
+            help="Path to local background video file",
         )
-        background_audio_url = st.text_input(
-            "Background Audio URL (Optional)",
+        background_audio_path = st.text_input(
+            "Background Audio Path (Optional)",
             "",
-            help="YouTube URL for background music/audio. Leave empty for no background audio.",
+            help="Path to local background music/audio file. Leave empty for no background audio.",
         )
         audio_mix = st.slider(
             "Background Audio Volume",
@@ -299,8 +299,8 @@ async def main():
         asyncio.run(
             run_pipeline(
                 model,
-                background_url,
-                background_audio_url if background_audio_url else None,
+                background_video_path,
+                background_audio_path if background_audio_path else None,
                 audio_mix,
                 tts_voice,
                 random_voice,

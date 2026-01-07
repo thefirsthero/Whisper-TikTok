@@ -29,8 +29,29 @@ class ProcessingStrategy(ABC):
         """Execute processing step and update context."""
 
 
+class UseLocalVideoStrategy(ProcessingStrategy):
+    """Strategy for using a local background video file."""
+
+    def __init__(self, logger: Logger):
+        self.logger = logger
+
+    async def execute(self, context: ProcessingContext) -> ProcessingContext:
+        video_path = context.config.get("background_video_path")
+        
+        if not video_path:
+            raise ValueError("background_video_path is required in config")
+        
+        video_file = Path(video_path)
+        if not video_file.exists():
+            raise FileNotFoundError(f"Background video not found: {video_path}")
+        
+        context.artifacts["background_video"] = video_file
+        self.logger.info(f"Using local background video: {video_file}")
+        return context
+
+
 class DownloadBackgroundStrategy(ProcessingStrategy):
-    """Strategy for downloading background video."""
+    """Strategy for downloading background video (deprecated - use UseLocalVideoStrategy instead)."""
 
     def __init__(self, downloader: IVideoDownloader, logger: Logger):
         self.downloader = downloader
@@ -44,8 +65,30 @@ class DownloadBackgroundStrategy(ProcessingStrategy):
         return context
 
 
+class UseLocalAudioStrategy(ProcessingStrategy):
+    """Strategy for using a local background audio file."""
+
+    def __init__(self, logger: Logger):
+        self.logger = logger
+
+    async def execute(self, context: ProcessingContext) -> ProcessingContext:
+        audio_path = context.config.get("background_audio_path")
+        
+        if audio_path:
+            audio_file = Path(audio_path)
+            if not audio_file.exists():
+                raise FileNotFoundError(f"Background audio not found: {audio_path}")
+            
+            context.artifacts["background_audio"] = audio_file
+            self.logger.info(f"Using local background audio: {audio_file}")
+        else:
+            self.logger.info("No background audio path provided, skipping")
+        
+        return context
+
+
 class DownloadBackgroundAudioStrategy(ProcessingStrategy):
-    """Strategy for downloading background audio."""
+    """Strategy for downloading background audio (deprecated - use UseLocalAudioStrategy instead)."""
 
     def __init__(self, downloader: IVideoDownloader, logger: Logger):
         self.downloader = downloader
