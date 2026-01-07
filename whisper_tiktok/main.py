@@ -97,13 +97,13 @@ def create(
         "background/your_video.mp4",
         "--background-video",
         "-b",
-        help="Path to local background video file",
+        help="Path to local background video file. Use quotes if path contains spaces",
     ),
     background_audio_path: Optional[str] = typer.Option(
         None,
         "--background-audio",
         "-a",
-        help="Path to local background audio file (music/ambience)",
+        help="Path to local background audio file. Use quotes if path contains spaces",
     ),
     audio_mix: int = typer.Option(
         30,
@@ -164,7 +164,7 @@ def create(
         None,
         "--rate",
         "-r",
-        help="Speech rate (e.g., +50% for faster, -25% for slower)",
+        help="Speech rate (e.g., +50% for faster, -25% for slower). Format: +X% or -X%",
     ),
     upload_tiktok: bool = typer.Option(
         False,

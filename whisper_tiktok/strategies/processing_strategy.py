@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from logging import Logger
 from pathlib import Path
+from typing import Optional
 
 from whisper_tiktok.interfaces.transcription_service import ITranscriptionService
 from whisper_tiktok.interfaces.tts_service import ITTSService
@@ -138,6 +139,34 @@ class TTSGenerationStrategy(ProcessingStrategy):
         
         return text
 
+    def _normalize_rate_format(self, rate: Optional[str]) -> Optional[str]:
+        """Normalize rate to edge-tts format: +X% or -X%.
+        
+        Accepts: '20', '+20', '20%', '-20', '+20%', '-25%', etc.
+        Returns: '+20%', '-25%', or None
+        """
+        import re
+        
+        if not rate or rate is None:
+            return None
+        
+        rate_str = str(rate).strip()
+        
+        # Extract sign and number
+        match = re.match(r'^([+-]?)(-?\d+)%?$', rate_str)
+        if not match:
+            raise ValueError(f"Invalid rate format '{rate}'. Use format like '+20%', '-25%', or '20'")
+        
+        sign, number = match.groups()
+        num = int(number)
+        
+        # Ensure we have a sign (default to +)
+        if not sign or sign == '':
+            sign = '+'
+        
+        # Return normalized format
+        return f"{sign}{abs(num)}%"
+
     async def execute(self, context: ProcessingContext) -> ProcessingContext:
         """Integrates TTS into the pipeline"""
         text = f"{context.video_data['series']} - part {context.video_data['part']}.\n"
@@ -147,6 +176,15 @@ class TTSGenerationStrategy(ProcessingStrategy):
         output_file = context.media_path / f"{context.uuid}.mp3"
         voice = context.config.get("tts_voice", "en-US-ChristopherNeural")
         rate = context.config.get("tts_rate")
+        
+        # Normalize rate format for edge-tts
+        if rate:
+            try:
+                rate = self._normalize_rate_format(rate)
+                self.logger.debug(f"Normalized speech rate to: {rate}")
+            except ValueError as e:
+                self.logger.error(f"Rate format error: {e}")
+                raise
 
         # Preprocess text for better TTS pronunciation
         tts_text = self._preprocess_text_for_tts(text)
